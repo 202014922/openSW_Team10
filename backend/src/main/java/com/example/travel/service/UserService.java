@@ -36,7 +36,7 @@ public class UserService {
         user.setPreferredDestination(updatedUser.getPreferredDestination());
         user.setHobbies(updatedUser.getHobbies()); // List<String>으로 설정
         user.setInterests(updatedUser.getInterests()); // List<String>으로 설정
-        user.setBudget(updatedUser.getBudget());
+        user.setBudget(updatedUser.getBudget()); // String으로 설정
         user.setAvailableTravelDates(updatedUser.getAvailableTravelDates());
 
         // 프로필 사진 업데이트

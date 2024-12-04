@@ -35,7 +35,7 @@ public class User {
     private List<String> interests; // 수정: String에서 List<String>으로 변경
 
     private String profilePicture;
-    private Double budget;
+    private String budget; // 수정: Double에서 String으로 변경
 
     @ElementCollection
     @CollectionTable(name = "user_available_dates", joinColumns = @JoinColumn(name = "user_id"))
@@ -121,20 +121,20 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
+    public String getBudget() {
+        return budget;
+    }
+
+    public void setBudget(String budget) {
+        this.budget = budget;
+    }
+
     public List<LocalDate> getAvailableTravelDates() {
         return availableTravelDates;
     }
 
     public void setAvailableTravelDates(List<LocalDate> availableTravelDates) {
         this.availableTravelDates = availableTravelDates;
-    }
-
-    public Double getBudget() {
-        return budget;
-    }
-
-    public void setBudget(Double budget) {
-        this.budget = budget;
     }
 
     public List<String> getRoles() {

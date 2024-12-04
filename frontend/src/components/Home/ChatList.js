@@ -6,12 +6,18 @@ import { motion } from 'framer-motion';
 
 function ChatList() {
     const [chats, setChats] = useState([]);
-    const user = JSON.parse(localStorage.getItem('user'));
+    // 수정: 'user'에서 'users'로 변경
+    const user = JSON.parse(localStorage.getItem('users'));
     const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchChats = async () => {
             try {
+                // user.id가 제대로 정의되었는지 확인
+                if (!user || !user.id) {
+                    setError('사용자 정보가 올바르지 않습니다.');
+                    return;
+                }
                 const response = await ApiService.getUserChats(user.id);
                 setChats(response.data);
             } catch (err) {

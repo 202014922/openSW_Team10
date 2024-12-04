@@ -111,9 +111,10 @@ function ProfileSettings() {
 
             if (selectedFile) {
                 const formData = new FormData();
-                formData.append('profilePicture', selectedFile);
-                const uploadResponse = await ApiService.uploadProfilePicture(userData.id, formData);
-                updatedUser.profilePicture = uploadResponse.data.filePath; // 서버에서 반환된 파일 경로 사용
+                formData.append('file', selectedFile); // 서버에서 'file'로 기대함
+                formData.append('userId', userData.id);
+                const uploadResponse = await ApiService.uploadProfilePicture(formData);
+                updatedUser.profilePicture = uploadResponse.data; // 서버에서 반환된 파일 URL 사용
             }
 
             await ApiService.updateUserProfile(updatedUser);

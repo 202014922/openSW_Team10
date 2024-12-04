@@ -25,6 +25,12 @@ public class UserController {
 
     private final String uploadDir = "./uploads/";
 
+    /**
+     * 프로필 사진 업로드 엔드포인트
+     * @param file 업로드할 파일
+     * @param userId 사용자 ID
+     * @return 파일 URL 또는 에러 메시지
+     */
     @PostMapping("/upload-profile-picture")
     public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
         if (file.isEmpty()) {
@@ -61,17 +67,35 @@ public class UserController {
         }
     }
 
+    /**
+     * 사용자 프로필 가져오기 엔드포인트
+     * @param id 사용자 ID
+     * @return 사용자 정보
+     */
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
-        User user = userService.getUserProfile(id);
-        return ResponseEntity.ok(user);
+        try {
+            User user = userService.getUserProfile(id);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
+    /**
+     * 사용자 프로필 업데이트 엔드포인트
+     * @param updatedUser 업데이트된 사용자 정보
+     * @return 업데이트된 사용자 정보
+     */
     @PutMapping("/update")
     public ResponseEntity<User> updateUserProfile(@RequestBody User updatedUser) {
-        User user = userService.updateUserProfile(updatedUser);
-        return ResponseEntity.ok(user);
+        try {
+            User user = userService.updateUserProfile(updatedUser);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    // 기존 메서드들...
+    // 기타 필요한 메서드들...
 }
