@@ -14,9 +14,9 @@ const axiosInstance = axios.create({
 // 요청 인터셉터 추가
 axiosInstance.interceptors.request.use(
     (config) => {
-        const users = AuthService.getCurrentUser();
-        if (users && users.token) {
-            config.headers['Authorization'] = `Bearer ${users.token}`;
+        const user = AuthService.getCurrentUser();
+        if (user && user.token) {
+            config.headers['Authorization'] = `Bearer ${user.token}`;
         }
         return config;
     },
@@ -65,6 +65,9 @@ const ApiServiceMethods = {
 
     // **플래너 삭제 메서드 추가**
     deletePlanner: (plannerId) => axiosInstance.delete(`/planner/delete/${plannerId}`),
+
+    // **채팅방 삭제 메서드 추가**
+    deleteChat: (chatId) => axiosInstance.delete(`/chat/delete/${chatId}`),
 
     // 추가 API 호출 메서드 정의
 };
