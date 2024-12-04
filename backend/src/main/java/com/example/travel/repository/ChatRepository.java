@@ -8,7 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Long>{
-    List<Chat> findByChatIdStartingWith(String prefix);
-    List<Chat> findByChatIdEndingWith(String suffix);
     List<Chat> findByChatId(String chatId);
+    List<Chat> findBySenderId(Long senderId);
 }

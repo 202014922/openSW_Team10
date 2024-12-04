@@ -61,16 +61,19 @@ function Match() {
                     ) : (
                         <List>
                             {matches.map(match => (
-                                <ListItem key={match.id} sx={{ mb: 1, border: '1px solid #ddd', borderRadius: 1 }}>
+                                <ListItem key={match.matchId} sx={{ mb: 1, border: '1px solid #ddd', borderRadius: 1 }}>
                                     <ListItemAvatar>
-                                        {match.profilePicture ? (
-                                            <Avatar src={`http://localhost:8080${match.profilePicture}`} alt={`${match.username} 프로필`} />
+                                        {match.user.profilePicture ? (
+                                            <Avatar src={`http://localhost:8080${match.user.profilePicture}`} alt={`${match.user.username} 프로필`} />
                                         ) : (
-                                            <Avatar>{match.username.charAt(0).toUpperCase()}</Avatar>
+                                            <Avatar>{match.user.username.charAt(0).toUpperCase()}</Avatar>
                                         )}
                                     </ListItemAvatar>
-                                    <ListItemText primary={match.username} />
-                                    <Button variant="contained" color="primary" onClick={() => handleSelect(match)}>
+                                    <ListItemText
+                                        primary={match.user.username}
+                                        secondary={`유사성: ${match.similarityScore.toFixed(2)}%`}
+                                    />
+                                    <Button variant="contained" color="primary" onClick={() => handleSelect(match.user)}>
                                         매칭 요청
                                     </Button>
                                 </ListItem>

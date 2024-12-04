@@ -214,12 +214,6 @@ public class MatchService {
      * @param match 업데이트된 매칭 정보
      * @return 생성된 채팅 방 ID
      */
-    /**
-     * 매칭 수락 시 채팅 방을 생성하는 메서드
-     *
-     * @param match 업데이트된 매칭 정보
-     * @return 생성된 채팅 방 ID
-     */
     private String createChatRoomForMatch(Match match) {
         Long user1Id = match.getUser1Id();
         Long user2Id = match.getUser2Id();
@@ -228,9 +222,6 @@ public class MatchService {
         Long smallerId = Math.min(user1Id, user2Id);
         Long largerId = Math.max(user1Id, user2Id);
         String chatId = "chat_" + smallerId + "_" + largerId;
-
-        // 채팅 방 생성
-        chatService.createChatRoom(chatId, smallerId, largerId);
 
         return chatId;
     }

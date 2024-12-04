@@ -1,4 +1,3 @@
-// ApiService.js
 import axios from 'axios';
 import AuthService from './AuthService';
 
@@ -38,8 +37,6 @@ axiosInstance.interceptors.response.use(
 
 // API 호출 메서드 정의
 const ApiServiceMethods = {
-
-
     signup: (users) => axiosInstance.post(`/auth/signup`, users),
     login: (credentials) => axiosInstance.post(`/auth/login`, credentials),
     resetPassword: (email, newPassword) => axiosInstance.post(`/auth/reset-password`, { email, newPassword }),
@@ -52,8 +49,11 @@ const ApiServiceMethods = {
     }),
     getAllMatches: () => axiosInstance.get(`/match/all`),
     createMatch: (match) => axiosInstance.post(`/match/create`, match),
-    updateMatchStatus: (id, status) => axiosInstance.put(`/match/update-status/${id}`, { status }),
+    updateMatchStatus: (id, status) => axiosInstance.put(`/match/update-status/${id}?status=${status}`),
     findMatches: (userId) => axiosInstance.get(`/match/find-matches/${userId}`),
+    getNotifications: (userId) => axiosInstance.get(`/match/notifications/${userId}`), // 알림 가져오기
+    acceptMatch: (matchId) => axiosInstance.post(`/match/notifications/accept/${matchId}`), // 매칭 수락
+    rejectMatch: (matchId) => axiosInstance.post(`/match/notifications/reject/${matchId}`), // 매칭 거절
     sendMessage: (message) => axiosInstance.post(`/chat/send`, message),
     getMessages: (chatId) => axiosInstance.get(`/chat/messages/${chatId}`),
     getUserChats: (userId) => axiosInstance.get(`/chat/user-chats/${userId}`),

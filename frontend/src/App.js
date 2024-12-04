@@ -32,7 +32,9 @@ const PrivateRoute = ({ children }) => {
 
 function App() {
   useEffect(() => {
-    WebSocketService.connect();
+    if (AuthService.isAuthenticated()) {
+      WebSocketService.connect();
+    }
     return () => {
       WebSocketService.disconnect();
     };
