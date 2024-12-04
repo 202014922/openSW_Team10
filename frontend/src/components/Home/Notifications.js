@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import ApiService from '../../services/ApiService';
 import { Container, Typography, Box, List, ListItem, ListItemText, Button, Alert, Avatar, ListItemAvatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import AuthService from '../../services/AuthService';
-//import { Link } from 'react-router-dom';
+import Header from '../../components/Header';
 
 function Notifications() {
     const [notifications, setNotifications] = useState([]);
@@ -68,7 +69,9 @@ function Notifications() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <Box sx={{ mt: 8, p: 4, boxShadow: 3, borderRadius: 2 }}>
+                <Header />
+
+                <Box sx={{ mt: 8, p: 4, boxShadow: 3, borderRadius: 2, backgroundColor: '#ffffff' }}>
                     <Typography variant="h4" component="h1" align="center" gutterBottom>
                         알림
                     </Typography>
