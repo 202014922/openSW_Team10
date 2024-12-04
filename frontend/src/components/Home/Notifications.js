@@ -3,7 +3,7 @@ import ApiService from '../../services/ApiService';
 import { Container, Typography, Box, List, ListItem, ListItemText, Button, Alert, Avatar, ListItemAvatar } from '@mui/material';
 import { motion } from 'framer-motion';
 import AuthService from '../../services/AuthService';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 
 function Notifications() {
     const [notifications, setNotifications] = useState([]);
@@ -32,10 +32,10 @@ function Notifications() {
             setNotifications(notifications.filter(notif => notif.matchId !== matchId));
 
             // 채팅 목록에 채팅 방 추가 (채팅 방 ID는 백엔드에서 생성되므로 클라이언트에서 재요청)
-            // Alternatively, you can generate the chatId here as per backend logic
+            // Alternatively, you can generate the chatId here as per localhost logic
             const smallerId = Math.min(user.id, matchedUserId);
             const largerId = Math.max(user.id, matchedUserId);
-            const chatId = `chat_${smallerId}_${largerId}`;
+            //const chatId = `chat_${smallerId}_${largerId}`;
 
             // 채팅 목록을 새로고침하여 방이 추가되었는지 확인
             // Alternatively, you can optimistically add the chatId to ChatList's state

@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 function ResetPassword() {
     const [email, setEmail] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
