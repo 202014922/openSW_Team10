@@ -38,6 +38,7 @@ public class UserService {
         user.setInterests(updatedUser.getInterests()); // List<String>으로 설정
         user.setBudget(updatedUser.getBudget()); // String으로 설정
         user.setAvailableTravelDates(updatedUser.getAvailableTravelDates());
+        user.setBio(updatedUser.getBio()); // 자기소개 업데이트
 
         // 프로필 사진 업데이트
         if (updatedUser.getProfilePicture() != null && !updatedUser.getProfilePicture().isEmpty()) {

@@ -48,6 +48,17 @@ public class User {
     @Column(name = "role")
     private List<String> roles;
 
+    @Column(length = 500) // 예: 최대 500자
+    private String bio;
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;

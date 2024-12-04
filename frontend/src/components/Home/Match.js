@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import ApiService from '../../services/ApiService';
-import { Container, Typography, Box, List, ListItem, ListItemText, Button, Alert, Avatar, ListItemAvatar } from '@mui/material';
-import { motion } from 'framer-motion';
 import AuthService from '../../services/AuthService';
+import {
+    Container,
+    Typography,
+    Box,
+    List,
+    ListItem,
+    ListItemText,
+    Button,
+    Alert,
+    Avatar,
+    ListItemAvatar
+} from '@mui/material';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom'; // 네비게이션 훅 추가
 
 function Match() {
     const [matches, setMatches] = useState([]);
     const user = AuthService.getCurrentUser();
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const navigate = useNavigate(); // 네비게이션 훅 초기화
 
     useEffect(() => {
         // 매칭된 사용자 리스트 가져오기
@@ -39,6 +52,10 @@ function Match() {
             setMessage('');
             console.error('매칭 요청 실패:', error);
         }
+    };
+
+    const handleViewProfile = (userId) => {
+        navigate(`/user/${userId}`);
     };
 
     return (
@@ -73,9 +90,14 @@ function Match() {
                                         primary={match.user.username}
                                         secondary={`유사성: ${match.similarityScore.toFixed(2)}%`}
                                     />
-                                    <Button variant="contained" color="primary" onClick={() => handleSelect(match.user)}>
-                                        매칭 요청
-                                    </Button>
+                                    <Box>
+                                        <Button variant="contained" color="primary" onClick={() => handleSelect(match.user)} sx={{ mr: 1 }}>
+                                            매칭 요청
+                                        </Button>
+                                        <Button variant="outlined" color="secondary" onClick={() => handleViewProfile(match.user.id)}>
+                                            프로필 보기
+                                        </Button>
+                                    </Box>
                                 </ListItem>
                             ))}
                         </List>
