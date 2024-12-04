@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: backend:latest
     container_name: spring-boot-backend
     ports:
       - "8080:8080"
@@ -18,9 +16,7 @@ services:
       - mysql
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: frontend:latest
     container_name: react-frontend
     ports:
       - "3000:3000"
@@ -39,6 +35,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: travel_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 1234
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
