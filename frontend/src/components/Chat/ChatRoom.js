@@ -1,14 +1,30 @@
+// src/components/Chat/ChatRoom.js
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom'; // useNavigate 추가
 import ApiService from '../../services/ApiService';
 import WebSocketService from '../../services/WebSocketService';
-import { Container, Typography, Box, TextField, Button, List, ListItem, ListItemText, Alert, Avatar, ListItemAvatar } from '@mui/material';
+import {
+    Container,
+    Typography,
+    Box,
+    TextField,
+    Button,
+    List,
+    ListItem,
+    ListItemText,
+    Alert,
+    Avatar,
+    ListItemAvatar,
+    CircularProgress
+} from '@mui/material';
 import { motion } from 'framer-motion';
 import AuthService from '../../services/AuthService';
 
 function ChatRoom() {
     const { chatId } = useParams();
-    const user = AuthService.getCurrentUser();
+    const navigate = useNavigate(); // useNavigate 훅 사용
+    const [user, setUser] = useState(null); // 현재 사용자 정보
+    const [otherUser, setOtherUser] = useState(null); // 상대방 사용자 정보
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [error, setError] = useState('');
@@ -16,26 +32,55 @@ function ChatRoom() {
     const subscriptionRef = useRef(null); // 구독 객체를 저장할 ref
 
     useEffect(() => {
-        // WebSocket 연결
-        WebSocketService.connect();
-
-        // 메시지 불러오기
-        const fetchMessages = async () => {
+        const fetchUserAndChatInfo = async () => {
             try {
-                const response = await ApiService.getMessages(chatId);
-                setMessages(response.data);
+                const currentUser = AuthService.getCurrentUser();
+                if (!currentUser || !currentUser.id) {
+                    throw new Error('사용자 정보가 올바르지 않습니다.');
+                }
+
+                // 현재 사용자 프로필 가져오기
+                const userResponse = await ApiService.getUserProfile(currentUser.id);
+                setUser(userResponse.data);
+
+                // 채팅방 상대방 사용자 ID 추출
+                const parts = chatId.split('_');
+                if (parts.length < 3) {
+                    throw new Error('채팅 ID 형식이 올바르지 않습니다.');
+                }
+                const smallerId = parseInt(parts[1], 10);
+                const largerId = parseInt(parts[2], 10);
+                const otherUserId = smallerId === currentUser.id ? largerId : smallerId;
+
+                // 상대방 사용자 프로필 가져오기
+                const otherUserResponse = await ApiService.getUserProfile(otherUserId);
+                setOtherUser(otherUserResponse.data);
+
+                // 메시지 불러오기
+                const messagesResponse = await ApiService.getMessages(chatId);
+                setMessages(messagesResponse.data);
                 scrollToBottom();
             } catch (err) {
-                console.error('메시지를 불러오는 데 실패했습니다.', err);
-                setError('메시지를 불러오는데 실패했습니다.');
+                console.error('데이터를 불러오는 중 오류 발생:', err);
+                setError(err.message || '데이터를 불러오는 데 실패했습니다.');
+                setUser(null);
+                setOtherUser(null);
+                setMessages([]);
+                if (err.response && err.response.status === 401) {
+                    AuthService.logout();
+                    navigate('/login');
+                }
             }
         };
 
-        fetchMessages();
+        fetchUserAndChatInfo();
+
+        // WebSocket 연결
+        WebSocketService.connect();
 
         // WebSocket 메시지 핸들러 정의
         const handleMessage = (message) => {
-            setMessages(prev => [...prev, message]);
+            setMessages((prev) => [...prev, message]);
             scrollToBottom();
         };
 
@@ -43,13 +88,14 @@ function ChatRoom() {
         subscriptionRef.current = WebSocketService.subscribe(`/topic/chat/${chatId}`, handleMessage);
 
         return () => {
-            // 컴포넌트 언마운트 시 구독 해제
+            // 컴포넌트 언마운트 시 구독 해제 및 WebSocket 연결 종료
             if (subscriptionRef.current) {
                 subscriptionRef.current.unsubscribe();
                 subscriptionRef.current = null;
             }
+            WebSocketService.disconnect();
         };
-    }, [chatId]);
+    }, [chatId, navigate]);
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
@@ -63,16 +109,33 @@ function ChatRoom() {
             chatId,
             senderId: user.id,
             content: input,
+            timestamp: new Date().toISOString()
         };
         try {
             await ApiService.sendMessage(message);
             setInput('');
-            // 메시지를 직접 추가하지 않고, 서버에서 WebSocket을 통해 다시 수신하도록 함
+            // 메시지는 WebSocket을 통해 다시 수신됩니다.
         } catch (err) {
             console.error('메시지 전송에 실패했습니다.', err);
             setError('메시지 전송에 실패했습니다.');
         }
     };
+
+    if (error) {
+        return (
+            <Container style={{ textAlign: 'center', marginTop: '50px' }}>
+                <Alert severity="error">{error}</Alert>
+            </Container>
+        );
+    }
+
+    if (!user || !otherUser) {
+        return (
+            <Container style={{ textAlign: 'center', marginTop: '50px' }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
 
     return (
         <Container maxWidth="md">
@@ -85,16 +148,52 @@ function ChatRoom() {
                     <Typography variant="h4" gutterBottom>
                         채팅방: {chatId}
                     </Typography>
-                    {error && <Alert severity="error">{error}</Alert>}
                     <List sx={{ maxHeight: '60vh', overflow: 'auto' }}>
                         {messages.map((msg, index) => (
-                            <ListItem key={index}>
+                            <ListItem key={index} alignItems="flex-start">
                                 <ListItemAvatar>
-                                    <Avatar>{msg.senderId === user.id ? '�' : '👥'}</Avatar>
+                                    <Avatar
+                                        src={
+                                            msg.senderId === user.id
+                                                ? user.profilePicture
+                                                    ? `http://localhost:8080${user.profilePicture}`
+                                                    : null
+                                                : otherUser.profilePicture
+                                                    ? `http://localhost:8080${otherUser.profilePicture}`
+                                                    : null
+                                        }
+                                        alt={
+                                            msg.senderId === user.id
+                                                ? `${user.username || '사용자'} 프로필`
+                                                : `${otherUser.username || '사용자'} 프로필`
+                                        }
+                                    >
+                                        {msg.senderId === user.id
+                                            ? (user.username ? user.username.charAt(0).toUpperCase() : 'U')
+                                            : (otherUser.username ? otherUser.username.charAt(0).toUpperCase() : 'U')}
+                                    </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText
-                                    primary={`${msg.senderId === user.id ? '나' : `유저 ${msg.senderId}`}: ${msg.content}`}
-                                    secondary={new Date(msg.timestamp).toLocaleString()}
+                                    primary={
+                                        msg.senderId === user.id
+                                            ? '나'
+                                            : otherUser.username
+                                                ? otherUser.username
+                                                : `유저 ${msg.senderId}`
+                                    }
+                                    secondary={
+                                        <>
+                                            <Typography
+                                                sx={{ display: 'inline' }}
+                                                component="span"
+                                                variant="body2"
+                                                color="text.primary"
+                                            >
+                                                {msg.content}
+                                            </Typography>
+                                            {" — " + new Date(msg.timestamp).toLocaleString()}
+                                        </>
+                                    }
                                 />
                             </ListItem>
                         ))}

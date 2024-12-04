@@ -1,3 +1,5 @@
+// src/services/ApiService.js
+
 import axios from 'axios';
 import AuthService from './AuthService';
 
@@ -51,15 +53,19 @@ const ApiServiceMethods = {
     createMatch: (match) => axiosInstance.post(`/match/create`, match),
     updateMatchStatus: (id, status) => axiosInstance.put(`/match/update-status/${id}?status=${status}`),
     findMatches: (userId) => axiosInstance.get(`/match/find-matches/${userId}`),
-    getNotifications: (userId) => axiosInstance.get(`/match/notifications/${userId}`), // 알림 가져오기
-    acceptMatch: (matchId) => axiosInstance.post(`/match/notifications/accept/${matchId}`), // 매칭 수락
-    rejectMatch: (matchId) => axiosInstance.post(`/match/notifications/reject/${matchId}`), // 매칭 거절
+    getNotifications: (userId) => axiosInstance.get(`/match/notifications/${userId}`),
+    acceptMatch: (matchId) => axiosInstance.post(`/match/notifications/accept/${matchId}`),
+    rejectMatch: (matchId) => axiosInstance.post(`/match/notifications/reject/${matchId}`),
     sendMessage: (message) => axiosInstance.post(`/chat/send`, message),
     getMessages: (chatId) => axiosInstance.get(`/chat/messages/${chatId}`),
     getUserChats: (userId) => axiosInstance.get(`/chat/user-chats/${userId}`),
     createPlanner: (planner) => axiosInstance.post(`/planner/create`, planner),
     getPlanners: (chatId) => axiosInstance.get(`/planner/chat/${chatId}`),
     updatePlanner: (planner) => axiosInstance.put(`/planner/update`, planner),
+
+    // **플래너 삭제 메서드 추가**
+    deletePlanner: (plannerId) => axiosInstance.delete(`/planner/delete/${plannerId}`),
+
     // 추가 API 호출 메서드 정의
 };
 

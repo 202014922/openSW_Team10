@@ -1,8 +1,11 @@
+// src/components/Home/Planner.js
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ApiService from '../../services/ApiService';
-import { Container, Typography, Box, TextField, Button, List, ListItem, ListItemText, Alert } from '@mui/material';
+import { Container, Typography, Box, TextField, Button, List, ListItem, ListItemText, Alert, IconButton } from '@mui/material';
 import { motion } from 'framer-motion';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function Planner() {
     const { chatId } = useParams();
@@ -52,9 +55,10 @@ function Planner() {
     };
 
     const handleUpdate = async (plannerId) => {
-        const updatedSchedule = prompt('새로운 일정:', planners.find(p => p.id === plannerId).schedule);
+        const planner = planners.find(p => p.id === plannerId);
+        const updatedSchedule = prompt('새로운 일정:', planner.schedule);
         if (updatedSchedule === null) return; // 취소 시
-        const updatedPlanner = { ...planners.find(p => p.id === plannerId), schedule: updatedSchedule };
+        const updatedPlanner = { ...planner, schedule: updatedSchedule };
         try {
             await ApiService.updatePlanner(updatedPlanner);
             setMessage('플래너가 성공적으로 업데이트되었습니다.');
@@ -64,6 +68,21 @@ function Planner() {
             setPlanners(response.data);
         } catch (err) {
             setError('플래너 업데이트에 실패했습니다.');
+            setMessage('');
+        }
+    };
+
+    const handleDelete = async (plannerId) => {
+        if (!window.confirm('정말 이 플래너를 삭제하시겠습니까?')) return;
+        try {
+            await ApiService.deletePlanner(plannerId);
+            setMessage('플래너가 성공적으로 삭제되었습니다.');
+            setError('');
+            // 플래너 목록 갱신
+            const response = await ApiService.getPlanners(chatId);
+            setPlanners(response.data);
+        } catch (err) {
+            setError('플래너 삭제에 실패했습니다.');
             setMessage('');
         }
     };
@@ -131,11 +150,29 @@ function Planner() {
                     </Typography>
                     <List>
                         {planners.map(planner => (
-                            <ListItem key={planner.id} secondaryAction={
-                                <Button variant="outlined" color="primary" onClick={() => handleUpdate(planner.id)}>
-                                    수정
-                                </Button>
-                            }>
+                            <ListItem
+                                key={planner.id}
+                                secondaryAction={
+                                    <>
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={() => handleUpdate(planner.id)}
+                                            sx={{ mr: 1 }}
+                                        >
+                                            수정
+                                        </Button>
+                                        <IconButton
+                                            edge="end"
+                                            aria-label="delete"
+                                            color="error"
+                                            onClick={() => handleDelete(planner.id)}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </>
+                                }
+                            >
                                 <ListItemText
                                     primary={`일정: ${planner.schedule}`}
                                     secondary={`예산: ${planner.budget} | 위치: ${planner.location} | 시간: ${planner.time}`}

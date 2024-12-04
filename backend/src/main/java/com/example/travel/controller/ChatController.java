@@ -4,6 +4,8 @@ import com.example.travel.entity.Chat;
 import com.example.travel.entity.ChatRoom;
 import com.example.travel.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000") // CORS 설정
 public class ChatController {
 
     @Autowired
@@ -46,6 +48,7 @@ public class ChatController {
 
     /**
      * 사용자의 채팅 목록을 가져오는 엔드포인트
+     *
      * @param userId 사용자 ID
      * @return 채팅 ID 리스트
      */
@@ -63,5 +66,21 @@ public class ChatController {
     @PostMapping("/create-room")
     public ChatRoom createChatRoom(@RequestBody ChatRoom chatRoom) {
         return chatService.createChatRoom(chatRoom.getChatId(), chatRoom.getUser1Id(), chatRoom.getUser2Id());
+    }
+
+    /**
+     * 채팅 방을 삭제합니다.
+     *
+     * @param chatId 채팅 방 ID
+     * @return 삭제 성공 메시지 또는 에러 메시지
+     */
+    @DeleteMapping("/delete/{chatId}")
+    public ResponseEntity<?> deleteChat(@PathVariable String chatId) {
+        try {
+            chatService.deleteChatRoom(chatId);
+            return ResponseEntity.ok().body("채팅방 " + chatId + "가 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("채팅방 삭제에 실패했습니다.");
+        }
     }
 }

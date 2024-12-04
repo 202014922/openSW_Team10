@@ -46,4 +46,13 @@ public class ChatRoomService {
     public List<ChatRoom> getChatRoomsByUserId(Long userId) {
         return chatRoomRepository.findByUser1IdOrUser2Id(userId, userId);
     }
+
+    /**
+     * 채팅 방을 삭제합니다.
+     *
+     * @param chatId 채팅 방 ID
+     */
+    public void deleteChatRoom(String chatId) {
+        chatRoomRepository.deleteById(chatId);
+    }
 }
