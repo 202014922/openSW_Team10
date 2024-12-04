@@ -12,6 +12,7 @@ import ChatRoom from './components/Chat/ChatRoom';
 import Planner from './components/Planner/Planner';
 import WebSocketService from './services/WebSocketService';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import AuthService from './services/AuthService';
 
 const theme = createTheme({
   palette: {
@@ -24,6 +25,11 @@ const theme = createTheme({
   },
 });
 
+// 인증된 사용자만 접근할 수 있는 컴포넌트
+const PrivateRoute = ({ children }) => {
+  return AuthService.isAuthenticated() ? children : <Navigate to="/login" />;
+};
+
 function App() {
   useEffect(() => {
     WebSocketService.connect();
@@ -31,10 +37,6 @@ function App() {
       WebSocketService.disconnect();
     };
   }, []);
-
-  const isAuthenticated = () => {
-    return localStorage.getItem('user') !== null;
-  };
 
   return (
       <ThemeProvider theme={theme}>
@@ -44,13 +46,13 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/home" element={isAuthenticated() ? <Home /> : <Navigate to="/login" />} />
-            <Route path="/profile-settings" element={isAuthenticated() ? <ProfileSettings /> : <Navigate to="/login" />} />
-            <Route path="/notifications" element={isAuthenticated() ? <Notifications /> : <Navigate to="/login" />} />
-            <Route path="/chats" element={isAuthenticated() ? <ChatList /> : <Navigate to="/login" />} />
-            <Route path="/match" element={isAuthenticated() ? <Match /> : <Navigate to="/login" />} />
-            <Route path="/chat/:chatId" element={isAuthenticated() ? <ChatRoom /> : <Navigate to="/login" />} />
-            <Route path="/planner/:chatId" element={isAuthenticated() ? <Planner /> : <Navigate to="/login" />} />
+            <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/profile-settings" element={<PrivateRoute><ProfileSettings /></PrivateRoute>} />
+            <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+            <Route path="/chats" element={<PrivateRoute><ChatList /></PrivateRoute>} />
+            <Route path="/match" element={<PrivateRoute><Match /></PrivateRoute>} />
+            <Route path="/chat/:chatId" element={<PrivateRoute><ChatRoom /></PrivateRoute>} />
+            <Route path="/planner/:chatId" element={<PrivateRoute><Planner /></PrivateRoute>} />
             {/* 추가 라우트 정의 */}
           </Routes>
         </Router>

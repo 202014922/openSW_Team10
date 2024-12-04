@@ -14,13 +14,13 @@ function Login() {
         e.preventDefault();
         console.log('로그인 시도:', { username, password }); // 디버깅 로그 추가
         try {
-            const response = await AuthService.login({ username, password }); // 객체로 전달
-            console.log('로그인 응답:', response); // 응답 데이터 확인
+            const token = await AuthService.login({ username, password }); // 토큰 반환
+            console.log('로그인 토큰:', token); // 토큰 확인
             navigate('/home');
         } catch (err) {
             console.error('로그인 에러:', err); // 에러 로그 추가
-            if (err.response && err.response.data && err.response.data.message) {
-                setError(err.response.data.message);
+            if (err.response && err.response.data) {
+                setError(err.response.data.message || '로그인에 실패했습니다. 사용자 이름과 비밀번호를 확인하세요.');
             } else {
                 setError('로그인에 실패했습니다. 사용자 이름과 비밀번호를 확인하세요.');
             }

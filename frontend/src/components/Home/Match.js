@@ -1,13 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import ApiService from '../../services/ApiService';
-import { Container, Typography, Box, List, ListItem, ListItemText, Button, Alert } from '@mui/material';
+import { Container, Typography, Box, List, ListItem, ListItemText, Button, Alert, Avatar, ListItemAvatar } from '@mui/material';
 import { motion } from 'framer-motion';
+import AuthService from '../../services/AuthService';
 
 function Match() {
     const [matches, setMatches] = useState([]);
-    const user = JSON.parse(localStorage.getItem('user'));
-    const [selectedMatch, setSelectedMatch] = useState(null);
+    const user = AuthService.getCurrentUser();
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
 
@@ -37,6 +36,7 @@ function Match() {
             }
         } catch (error) {
             setError('매칭 요청 실패: 다시 시도해주세요.');
+            setMessage('');
             console.error('매칭 요청 실패:', error);
         }
     };
@@ -62,6 +62,13 @@ function Match() {
                         <List>
                             {matches.map(match => (
                                 <ListItem key={match.id} sx={{ mb: 1, border: '1px solid #ddd', borderRadius: 1 }}>
+                                    <ListItemAvatar>
+                                        {match.profilePicture ? (
+                                            <Avatar src={`http://localhost:8080${match.profilePicture}`} alt={`${match.username} 프로필`} />
+                                        ) : (
+                                            <Avatar>{match.username.charAt(0).toUpperCase()}</Avatar>
+                                        )}
+                                    </ListItemAvatar>
                                     <ListItemText primary={match.username} />
                                     <Button variant="contained" color="primary" onClick={() => handleSelect(match)}>
                                         매칭 요청
