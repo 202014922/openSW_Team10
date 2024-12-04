@@ -167,15 +167,6 @@ function ChatList() {
                                                 >
                                                     채팅하기
                                                 </Button>
-                                                <Button
-                                                    component={Link}
-                                                    to={`/user/${otherUserId}`}
-                                                    variant="outlined"
-                                                    color="info"
-                                                    sx={{ mr: 1 }}
-                                                >
-                                                    프로필 보기
-                                                </Button>
                                                 <IconButton
                                                     edge="end"
                                                     aria-label="delete"

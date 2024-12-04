@@ -10,7 +10,6 @@ import ChatList from './components/Home/ChatList';
 import Match from './components/Home/Match';
 import ChatRoom from './components/Chat/ChatRoom';
 import Planner from './components/Planner/Planner';
-import UserProfile from './components/Home/UserProfile'; // 추가된 컴포넌트
 import WebSocketService from './services/WebSocketService';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AuthService from './services/AuthService';
@@ -56,8 +55,6 @@ function App() {
             <Route path="/match" element={<PrivateRoute><Match /></PrivateRoute>} />
             <Route path="/chat/:chatId" element={<PrivateRoute><ChatRoom /></PrivateRoute>} />
             <Route path="/planner/:chatId" element={<PrivateRoute><Planner /></PrivateRoute>} />
-            {/* **사용자 프로필 페이지 라우트 추가** */}
-            <Route path="/user/:userId" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
             {/* 추가 라우트 정의 */}
           </Routes>
         </Router>

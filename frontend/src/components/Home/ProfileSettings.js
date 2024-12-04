@@ -30,7 +30,6 @@ function ProfileSettings() {
     const [profilePicture, setProfilePicture] = useState('');
     const [budget, setBudget] = useState('');
     const [availableDates, setAvailableDates] = useState([]);
-    const [bio, setBio] = useState(''); // 자기소개 상태 추가
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
@@ -56,7 +55,6 @@ function ProfileSettings() {
                 setProfilePicture(response.data.profilePicture ? `http://localhost:8080${response.data.profilePicture}` : '');
                 setBudget(response.data.budget || '');
                 setAvailableDates(response.data.availableTravelDates || []);
-                setBio(response.data.bio || ''); // 자기소개 설정
             } catch (err) {
                 console.error('프로필 불러오기 실패:', err);
                 setError('프로필을 불러오는 데 실패했습니다.');
@@ -109,7 +107,6 @@ function ProfileSettings() {
                 interests,
                 budget,
                 availableTravelDates: availableDates,
-                bio, // 자기소개 포함
             };
 
             if (selectedFile) {
@@ -247,25 +244,6 @@ function ProfileSettings() {
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>
-
-                            {/* 자기소개 입력 */}
-                            <Grid item xs={12}>
-                                <TextField
-                                    label="자기소개"
-                                    variant="outlined"
-                                    fullWidth
-                                    multiline
-                                    rows={4}
-                                    value={bio}
-                                    onChange={(e) => {
-                                        if (e.target.value.length <= 500) { // 500자 제한
-                                            setBio(e.target.value);
-                                        }
-                                    }}
-                                    helperText={`${bio.length}/500자`}
-                                    placeholder="간단한 자기소개를 입력해주세요."
-                                />
                             </Grid>
 
                             {/* 프로필 사진 업로드 */}
