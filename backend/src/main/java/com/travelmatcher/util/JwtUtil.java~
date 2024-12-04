@@ -1,0 +1,4 @@
+package com.travelmatcher.util;
+
+public class JwtUtil {
+}
