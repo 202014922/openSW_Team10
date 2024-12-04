@@ -1,6 +1,7 @@
 package com.example.travel.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -22,14 +23,30 @@ public class User {
 
     private String travelStyle;
     private String preferredDestination;
-    private String hobbies;
-    private String interests;
+
+    @ElementCollection
+    @CollectionTable(name = "user_hobbies", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "hobby")
+    private List<String> hobbies; // 수정: String에서 List<String>으로 변경
+
+    @ElementCollection
+    @CollectionTable(name = "user_interests", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "interest")
+    private List<String> interests; // 수정: String에서 List<String>으로 변경
+
     private String profilePicture;
-    private Double budget;
+    private String budget; // 수정: Double에서 String으로 변경
+
     @ElementCollection
     @CollectionTable(name = "user_available_dates", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "available_date")
-    private List<java.time.LocalDate> availableTravelDates;
+    private List<LocalDate> availableTravelDates;
+
+    // 역할을 저장하기 위한 필드 추가
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role")
+    private List<String> roles;
 
     // Getters and Setters
     public Long getId() {
@@ -80,19 +97,19 @@ public class User {
         this.preferredDestination = preferredDestination;
     }
 
-    public String getHobbies() {
+    public List<String> getHobbies() {
         return hobbies;
     }
 
-    public void setHobbies(String hobbies) {
+    public void setHobbies(List<String> hobbies) {
         this.hobbies = hobbies;
     }
 
-    public String getInterests() {
+    public List<String> getInterests() {
         return interests;
     }
 
-    public void setInterests(String interests) {
+    public void setInterests(List<String> interests) {
         this.interests = interests;
     }
 
@@ -104,19 +121,27 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
-    public List<java.time.LocalDate> getAvailableTravelDates() {
-        return availableTravelDates;
-    }
-
-    public void setAvailableTravelDates(List<java.time.LocalDate> availableTravelDates) {
-        this.availableTravelDates = availableTravelDates;
-    }
-    public Double getBudget() {
+    public String getBudget() {
         return budget;
     }
 
-    public void setBudget(Double budget) {
+    public void setBudget(String budget) {
         this.budget = budget;
     }
 
+    public List<LocalDate> getAvailableTravelDates() {
+        return availableTravelDates;
     }
+
+    public void setAvailableTravelDates(List<LocalDate> availableTravelDates) {
+        this.availableTravelDates = availableTravelDates;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+}

@@ -1,17 +1,61 @@
-import React from 'react';
+// Home.js
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, Grid, Card, CardContent } from '@mui/material';
+import { Container, Typography, Box, Button, Grid, Card, CardContent, Avatar, CircularProgress, Alert } from '@mui/material';
 import { motion } from 'framer-motion';
-
+import AuthService from '../../services/AuthService';
+import ApiService from '../../services/ApiService';
 
 function Home() {
     const navigate = useNavigate();
-    const user = JSON.parse(localStorage.getItem('user'));
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const currentUser = AuthService.getCurrentUser();
+                if (!currentUser || !currentUser.id) {
+                    throw new Error('사용자 정보가 없습니다.');
+                }
+                const response = await ApiService.getUserProfile(currentUser.id);
+                setUser(response.data);
+                setLoading(false);
+            } catch (err) {
+                console.error('사용자 정보를 불러오는 중 오류 발생:', err);
+                setError('사용자 정보를 불러오는 데 실패했습니다.');
+                setLoading(false);
+                if (err.response && err.response.status === 401) {
+                    AuthService.logout();
+                    navigate('/login');
+                }
+            }
+        };
+
+        fetchUserProfile();
+    }, [navigate]);
 
     const handleLogout = () => {
-        localStorage.removeItem('user');
+        AuthService.logout();
         navigate('/login');
     };
+
+    if (loading) {
+        return (
+            <Container style={{ textAlign: 'center', marginTop: '50px' }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container style={{ textAlign: 'center', marginTop: '50px' }}>
+                <Alert severity="error">{error}</Alert>
+            </Container>
+        );
+    }
 
     return (
         <Container maxWidth="lg">
@@ -24,8 +68,19 @@ function Home() {
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={6}>
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                {user && user.profilePicture ? (
+                                    <Avatar
+                                        alt={user.username}
+                                        src={`http://localhost:8080${user.profilePicture}`}
+                                        sx={{ width: 80, height: 80, mr: 2 }}
+                                    />
+                                ) : (
+                                    <Avatar sx={{ width: 80, height: 80, mr: 2 }}>
+                                        {user && user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                                    </Avatar>
+                                )}
                                 <Typography variant="h4">
-                                    안녕하세요, {user.username}님!
+                                    안녕하세요, {user && user.username ? user.username : 'User'}님!
                                 </Typography>
                             </Box>
                             <Box sx={{ mt: 4 }}>
@@ -46,10 +101,10 @@ function Home() {
                                         <Card>
                                             <CardContent>
                                                 <Typography variant="h6" gutterBottom>
-                                                    <Link to="/match">매칭 시작</Link>
+                                                    <Link to="/match">매칭</Link>
                                                 </Typography>
                                                 <Typography variant="body2">
-                                                    새로운 여행 파트너를 만나보세요.
+                                                    여행 동반자를 찾아보세요.
                                                 </Typography>
                                             </CardContent>
                                         </Card>
@@ -58,10 +113,10 @@ function Home() {
                                         <Card>
                                             <CardContent>
                                                 <Typography variant="h6" gutterBottom>
-                                                    <Link to="/chats">채팅 목록</Link>
+                                                    <Link to="/chats">채팅</Link>
                                                 </Typography>
                                                 <Typography variant="body2">
-                                                    현재 진행 중인 채팅을 확인하세요.
+                                                    친구들과 채팅을 나눠보세요.
                                                 </Typography>
                                             </CardContent>
                                         </Card>

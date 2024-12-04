@@ -1,41 +1,69 @@
-import ApiServiceMethods, { axiosInstance } from './ApiService';
+// AuthService.js
+import ApiServiceMethods from './ApiService';
 
 class AuthService {
-    // 로그인 메서드 수정: credentials 객체 받음
+    signup(users) {
+        return ApiServiceMethods.signup(users)
+            .then(response => {
+                return response.data;
+            })
+            .catch(error => {
+                console.error('회원가입 실패:', error);
+                throw error;
+            });
+    }
+
     login(credentials) {
         return ApiServiceMethods.login(credentials)
             .then(response => {
-                if (response.data) {
-                    // 사용자 정보를 로컬 스토리지에 저장
-                    localStorage.setItem('user', JSON.stringify(response.data));
-                    // Authorization 헤더에 토큰 추가
-                    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+                const token = response.data; // 응답의 data에서 토큰 추출
+                if (token) {
+                    // 토큰과 사용자 ID를 로컬 스토리지에 저장
+                    const decoded = this.decodeToken(token);
+                    const users = { token, id: decoded.id };
+                    localStorage.setItem('users', JSON.stringify(users));
                 }
+                return token;
+            })
+            .catch(error => {
+                console.error('로그인 실패:', error);
+                throw error;
+            });
+    }
+
+    resetPassword(email, newPassword) {
+        return ApiServiceMethods.resetPassword(email, newPassword)
+            .then(response => {
                 return response.data;
+            })
+            .catch(error => {
+                console.error('비밀번호 재설정 실패:', error);
+                throw error;
             });
     }
 
     logout() {
-        // 로컬 스토리지에서 사용자 정보 제거
-        localStorage.removeItem('user');
-        // Authorization 헤더 제거
-        delete axiosInstance.defaults.headers.common['Authorization'];
-    }
-
-    signup(user) {
-        return ApiServiceMethods.signup(user);
-    }
-
-    resetPassword(email, newPassword) {
-        return ApiServiceMethods.resetPassword(email, newPassword);
+        localStorage.removeItem('users');
     }
 
     getCurrentUser() {
-        return JSON.parse(localStorage.getItem('user'));
+        return JSON.parse(localStorage.getItem('users'));
     }
 
     isAuthenticated() {
-        return this.getCurrentUser() !== null;
+        const users = this.getCurrentUser();
+        return users && users.token;
+    }
+
+    decodeToken(token) {
+        try {
+            const payload = token.split('.')[1];
+            const decoded = JSON.parse(atob(payload));
+            return { id: decoded.id, username: decoded.sub };
+        } catch (e) {
+            console.error('토큰 디코딩 실패:', e);
+            return {};
+        }
     }
 }
 

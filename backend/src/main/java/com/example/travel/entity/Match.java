@@ -12,7 +12,19 @@ public class Match {
 
     private Long user1Id;
     private Long user2Id;
-    private String status; // 대기, 수락, 거절
+
+    @Enumerated(EnumType.STRING)
+    private MatchStatus status; // 매칭 상태: 대기, 수락, 거절
+
+    // 기본 생성자
+    public Match() {}
+
+    // 매칭 생성 시 필요한 생성자
+    public Match(Long user1Id, Long user2Id, MatchStatus status) {
+        this.user1Id = user1Id;
+        this.user2Id = user2Id;
+        this.status = status;
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -39,11 +51,11 @@ public class Match {
         this.user2Id = user2Id;
     }
 
-    public String getStatus() {
+    public MatchStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(MatchStatus status) {
         this.status = status;
     }
 }
