@@ -1,4 +1,0 @@
-package com.travelmatcher.config;
-
-public class WebSocketConfig {
-}

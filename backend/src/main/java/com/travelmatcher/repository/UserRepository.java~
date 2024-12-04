@@ -1,4 +1,0 @@
-package com.travelmatcher.model.repository;
-
-public class UserRepository {
-}
