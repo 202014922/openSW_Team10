@@ -3,7 +3,7 @@ import AuthService from '../../services/AuthService';
 import { useNavigate, Link } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Box, Alert } from '@mui/material';
 import { motion } from 'framer-motion';
-const API_URL = 'http://localhost:8080';
+
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -14,12 +14,16 @@ function Login() {
         e.preventDefault();
         console.log('로그인 시도:', { username, password }); // 디버깅 로그 추가
         try {
-            const response = await AuthService.login({ username, password });
+            const response = await AuthService.login({ username, password }); // 객체로 전달
             console.log('로그인 응답:', response); // 응답 데이터 확인
             navigate('/home');
         } catch (err) {
             console.error('로그인 에러:', err); // 에러 로그 추가
-            setError('로그인에 실패했습니다. 사용자 이름과 비밀번호를 확인하세요.');
+            if (err.response && err.response.data && err.response.data.message) {
+                setError(err.response.data.message);
+            } else {
+                setError('로그인에 실패했습니다. 사용자 이름과 비밀번호를 확인하세요.');
+            }
         }
     };
 
