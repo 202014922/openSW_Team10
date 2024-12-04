@@ -13,6 +13,9 @@ RUN npm install
 # 애플리케이션 소스 코드 복사
 COPY . .
 
+# 실행 권한 설정
+RUN chmod +x node_modules/.bin/react-scripts
+
 # 애플리케이션 실행 포트
 EXPOSE 3000
 
